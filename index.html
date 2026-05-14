@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tratamiento Prolongado</title>
+  <title>Tratamientos Prolongados - OSP Pasteleros Mendoza</title>
 
   <style>
     :root {
@@ -25,13 +25,34 @@
       font-family: Arial, sans-serif;
       background: var(--fondo);
       color: var(--texto);
+      line-height: 1.45;
     }
 
     header {
       background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
       color: white;
-      padding: 24px 18px;
+      padding: 24px 18px 20px;
       text-align: center;
+      border-bottom: 4px solid #0a6437;
+      box-shadow: 0 6px 16px rgba(9, 88, 47, 0.2);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(1.4rem, 2vw + 1rem, 2rem);
+      letter-spacing: 0.2px;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      opacity: 0.95;
+    }
+
+    header .sub-org {
+      margin-top: 4px;
+      font-weight: bold;
+      font-size: 14px;
+      letter-spacing: 0.3px;
     }
 
     main {
@@ -246,13 +267,26 @@
       padding: 8px 0;
     }
 
+    footer {
+      text-align: center;
+      color: #4b5563;
+      font-size: 12px;
+      padding: 18px 14px 24px;
+    }
+
     @media (max-width: 850px) {
       .grid { grid-template-columns: 1fr; }
       .dashboard { grid-template-columns: 1fr 1fr; }
+      header { padding: 20px 14px 18px; }
+      main { margin: 18px auto; }
     }
 
     @media (max-width: 500px) {
       .dashboard { grid-template-columns: 1fr; }
+      .card { padding: 14px; border-radius: 14px; }
+      input, button { font-size: 16px; }
+      .acciones { flex-direction: column; }
+      .acciones button { width: 100%; }
     }
   </style>
 </head>
@@ -268,7 +302,8 @@
 
   <div id="app" class="oculto">
     <header>
-      <h1>Tratamiento Prolongado</h1>
+      <h1>Sistema interno - Tratamientos prolongados</h1>
+      <p class="sub-org">OSP Pasteleros Mendoza</p>
       <p>Registro y control de recetas mensuales</p>
     </header>
 
@@ -328,6 +363,9 @@
         </div>
       </section>
     </main>
+    <footer>
+      Sistema interno de gestión de tratamientos prolongados - OSP Pasteleros Mendoza
+    </footer>
   </div>
 
   <div id="modalEditar" class="modal">
