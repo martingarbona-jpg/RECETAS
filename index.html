@@ -342,6 +342,10 @@ Levotiroxina 100mcg"></textarea>
           <label>Fecha receta original</label>
           <input id="fecha" type="date" />
 
+          <label>Recetas ya emitidas anteriormente</label>
+          <input id="emitidasPrevias" type="number" min="0" max="5" value="0" />
+          <small style="display:block; margin-top:6px; color:#6b7280;">Usar solo cuando se cargan tratamientos que ya venían en papel. Si es receta nueva, dejar en 0.</small>
+
           <button id="btnGuardar" onclick="guardarReceta()">Guardar receta</button>
 
           <div id="msgCarga" class="mensaje"></div>
@@ -411,7 +415,7 @@ Levotiroxina 100mcg"></textarea>
   </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzfDvx9dfMIqUU7i0FvlFwcrT_iO7h5m340fG5Ou7TM9e8bHUwVGXJN9zPtpCZHfcaX/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMki8AL7pDjdAm1CiwMhRcPP9C13h384adE08nesGGKjg2Rg5B4vzRYGZFZO0A6TQk/exec";
 
 const AFILIADOS_URL = "https://script.google.com/macros/s/AKfycby86fvv4wOHh3eth7mLTmvSwXiD6INr7syd0tJ7DPQ0gPeH7SvoCfdk6wb5pCRSDh81/exec";
 
@@ -528,6 +532,7 @@ async function guardarReceta() {
   const paciente = document.getElementById("paciente").value.trim();
   const droga = document.getElementById("droga").value.trim();
   const fecha = document.getElementById("fecha").value;
+  const emitidasPrevias = document.getElementById("emitidasPrevias").value || "0";
 
   if (!dni || !paciente || !droga || !fecha) {
     alert("Completá DNI, droga y fecha. El nombre debe aparecer automáticamente.");
@@ -549,7 +554,8 @@ async function guardarReceta() {
       paciente,
       dni,
       droga,
-      fechaRecetaOriginal: fecha
+      fechaRecetaOriginal: fecha,
+      emitidasPrevias
     });
 
     mostrarMensaje("msgCarga", json.mensaje || "Operación realizada", json.ok ? "ok" : "error");
@@ -559,6 +565,7 @@ async function guardarReceta() {
       document.getElementById("dni").value = "";
       document.getElementById("droga").value = "";
       document.getElementById("fecha").value = "";
+      document.getElementById("emitidasPrevias").value = "0";
       afiliadoValidado = false;
       ocultarMensaje("msgAfiliado");
       cargarDashboard();
