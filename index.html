@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tratamiento Prolongado</title>
+
+  <style>
+    :root {
+      --verde: #0f7a43;
+      --verde-oscuro: #09582f;
+      --fondo: #f4f7f5;
+      --texto: #1f2933;
+      --gris: #6b7280;
+      --rojo: #c62828;
+      --naranja: #ef8f00;
+      --azul: #2563eb;
+      --borde: #d8e2dc;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--fondo);
+      color: var(--texto);
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--verde), var(--verde-oscuro));
+      color: white;
+      padding: 24px 18px;
+      text-align: center;
+    }
+
+    main {
+      max-width: 1150px;
+      margin: 24px auto;
+      padding: 0 14px;
+    }
+
+    .login {
+      max-width: 420px;
+      margin: 80px auto;
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+
+    .oculto { display: none; }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .dash-card {
+      background: white;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--borde);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    }
+
+    .dash-card span {
+      color: var(--gris);
+      font-size: 14px;
+    }
+
+    .dash-card strong {
+      display: block;
+      font-size: 28px;
+      margin-top: 6px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      border: 1px solid var(--borde);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: var(--verde-oscuro);
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border-radius: 12px;
+      border: 1px solid #cfd8d3;
+      font-size: 15px;
+    }
+
+    input[readonly] {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 11px 14px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+      background: var(--verde);
+      color: white;
+      margin-top: 12px;
+    }
+
+    button:hover { background: var(--verde-oscuro); }
+
+    button:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .btn-sec {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .btn-red { background: var(--rojo); }
+    .btn-orange { background: var(--naranja); }
+    .btn-blue { background: var(--azul); }
+
+    .acciones {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .resultado { margin-top: 18px; }
+
+    .receta {
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+      border: 1px solid var(--borde);
+      background: #fff;
+    }
+
+    .receta.vencida { border-left: 8px solid var(--rojo); background: #fff7f7; }
+    .receta.disponible { border-left: 8px solid var(--verde); }
+    .receta.emitida { border-left: 8px solid var(--naranja); background: #fffaf1; }
+    .receta.original { border-left: 8px solid var(--azul); background: #f7fbff; }
+    .receta.alerta { box-shadow: 0 0 0 2px #ffe1a6 inset; }
+
+    .pill {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .pill.verde { background: #dff5e8; color: var(--verde-oscuro); }
+    .pill.rojo { background: #fde2e2; color: var(--rojo); }
+    .pill.naranja { background: #fff1d6; color: #9a5c00; }
+    .pill.azul { background: #dbeafe; color: #1d4ed8; }
+
+    .dato {
+      margin: 4px 0;
+      color: var(--gris);
+    }
+
+    .dato b { color: var(--texto); }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .mensaje {
+      padding: 12px;
+      border-radius: 12px;
+      background: #eef6f0;
+      margin-top: 12px;
+      display: none;
+      font-weight: bold;
+    }
+
+    .mensaje.ok {
+      background: #e2f7e9;
+      color: #0f6537;
+    }
+
+    .mensaje.error {
+      background: #fde2e2;
+      color: #a31d1d;
+    }
+
+    .mensaje.info {
+      background: #e8f1ff;
+      color: #1d4ed8;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 99;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 18px;
+      padding: 18px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 85vh;
+      overflow: auto;
+    }
+
+    .historial-item {
+      border-bottom: 1px solid var(--borde);
+      padding: 8px 0;
+    }
+
+    @media (max-width: 850px) {
+      .grid { grid-template-columns: 1fr; }
+      .dashboard { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 500px) {
+      .dashboard { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="login" class="login">
+    <h2>Ingreso al sistema</h2>
+    <label>Clave</label>
+    <input id="clave" type="password" placeholder="Ingresar clave" />
+    <button onclick="entrarSistema()">Entrar</button>
+  </div>
+
+  <div id="app" class="oculto">
+    <header>
+      <h1>Tratamiento Prolongado</h1>
+      <p>Registro y control de recetas mensuales</p>
+    </header>
+
+    <main>
+      <section class="dashboard">
+        <div class="dash-card"><span>Recetas activas</span><strong id="dashActivas">0</strong></div>
+        <div class="dash-card"><span>Por vencer</span><strong id="dashPorVencer">0</strong></div>
+        <div class="dash-card"><span>Vencidas</span><strong id="dashVencidas">0</strong></div>
+        <div class="dash-card"><span>Emitidas este mes</span><strong id="dashEmitidas">0</strong></div>
+      </section>
+
+      <div class="grid">
+        <section class="card">
+          <h2>Cargar receta original</h2>
+
+          <label>DNI</label>
+          <input id="dni" placeholder="Ej: 30111222" oninput="buscarAfiliadoAutomatico()" />
+
+          <div id="msgAfiliado" class="mensaje"></div>
+
+          <label>Nombre y apellido</label>
+          <input id="paciente" placeholder="Se completa automáticamente" readonly />
+
+          <label>Droga / medicamento</label>
+          <input id="droga" placeholder="Ej: Losartán 50mg" />
+
+          <label>Fecha receta original</label>
+          <input id="fecha" type="date" />
+
+          <button id="btnGuardar" onclick="guardarReceta()">Guardar receta</button>
+
+          <div id="msgCarga" class="mensaje"></div>
+        </section>
+
+        <section class="card">
+          <h2>Buscar paciente</h2>
+
+          <label>DNI, nombre o droga</label>
+          <input id="buscar" placeholder="Buscar..." oninput="buscarAutomatico()" />
+
+          <button id="btnBuscar" onclick="buscarPaciente()">Buscar</button>
+
+          <div id="msgBusqueda" class="mensaje"></div>
+
+          <div class="tabs">
+            <button class="btn-sec" onclick="cargarPorVencer()">Por vencer</button>
+            <button class="btn-sec" onclick="cargarVencidas()">Vencidas</button>
+            <button class="btn-sec" onclick="limpiarResultados()">Limpiar</button>
+          </div>
+        </section>
+      </div>
+
+      <section class="card resultado">
+        <h2>Resultados</h2>
+        <div id="resultados">
+          <p class="dato">Buscá un paciente para ver sus medicamentos.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modalEditar" class="modal">
+    <div class="modal-content">
+      <h2>Editar receta</h2>
+
+      <input type="hidden" id="editId" />
+
+      <label>Nombre y apellido</label>
+      <input id="editPaciente" />
+
+      <label>DNI</label>
+      <input id="editDni" />
+
+      <label>Droga</label>
+      <input id="editDroga" />
+
+      <label>Fecha receta original</label>
+      <input id="editFecha" type="date" />
+
+      <div class="acciones">
+        <button onclick="guardarEdicion()">Guardar cambios</button>
+        <button class="btn-sec" onclick="cerrarModal('modalEditar')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalHistorial" class="modal">
+    <div class="modal-content">
+      <h2>Historial de emisiones</h2>
+      <div id="historialContenido"></div>
+      <button class="btn-sec" onclick="cerrarModal('modalHistorial')">Cerrar</button>
+    </div>
+  </div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwwwBXUfu6LTXlOKA3dNt1peVbADfheanhn6WGRyzanWfDlZzz0B_6jgXW_oZviw6FG/exec";
+
+const AFILIADOS_URL = "https://script.google.com/macros/s/AKfycby86fvv4wOHh3eth7mLTmvSwXiD6INr7syd0tJ7DPQ0gPeH7SvoCfdk6wb5pCRSDh81/exec";
+
+const CLAVE_SISTEMA = "1234";
+
+let timerBusqueda = null;
+let timerAfiliado = null;
+let ultimaBusqueda = "";
+let afiliadoValidado = false;
+
+function entrarSistema() {
+  const clave = document.getElementById("clave").value;
+
+  if (clave !== CLAVE_SISTEMA) {
+    alert("Clave incorrecta");
+    return;
+  }
+
+  localStorage.setItem("tp_login", "ok");
+  document.getElementById("login").classList.add("oculto");
+  document.getElementById("app").classList.remove("oculto");
+  cargarDashboard();
+}
+
+window.addEventListener("load", () => {
+  if (localStorage.getItem("tp_login") === "ok") {
+    document.getElementById("login").classList.add("oculto");
+    document.getElementById("app").classList.remove("oculto");
+    cargarDashboard();
+  }
+});
+
+function mostrarMensaje(id, texto, tipo = "") {
+  const el = document.getElementById(id);
+  el.textContent = texto;
+  el.className = "mensaje";
+  if (tipo) el.classList.add(tipo);
+  el.style.display = "block";
+}
+
+function ocultarMensaje(id) {
+  document.getElementById(id).style.display = "none";
+}
+
+function limpiarValidacionAfiliado() {
+  afiliadoValidado = false;
+  document.getElementById("paciente").value = "";
+}
+
+function buscarAfiliadoAutomatico() {
+  clearTimeout(timerAfiliado);
+
+  limpiarValidacionAfiliado();
+
+  const dni = document.getElementById("dni").value.replace(/\D+/g, "");
+
+  if (dni.length < 7) {
+    ocultarMensaje("msgAfiliado");
+    return;
+  }
+
+  mostrarMensaje("msgAfiliado", "Buscando afiliado...", "info");
+
+  timerAfiliado = setTimeout(() => {
+    buscarAfiliadoPorDni(dni);
+  }, 500);
+}
+
+async function buscarAfiliadoPorDni(dni) {
+  try {
+    const url = `${AFILIADOS_URL}?accion=buscarPorDni&dni=${encodeURIComponent(dni)}`;
+    const res = await fetch(url);
+    const json = await res.json();
+
+    if (json.ok && json.nombre) {
+      afiliadoValidado = true;
+      document.getElementById("paciente").value = json.nombre;
+      mostrarMensaje("msgAfiliado", "Afiliado encontrado: " + json.nombre, "ok");
+      return;
+    }
+
+    afiliadoValidado = false;
+    document.getElementById("paciente").value = "";
+
+    if (json.encontrado && json.activo === false) {
+      mostrarMensaje("msgAfiliado", "Afiliado encontrado pero NO activo.", "error");
+    } else {
+      mostrarMensaje("msgAfiliado", "Afiliado no encontrado. Verificar DNI.", "error");
+    }
+
+  } catch (error) {
+    afiliadoValidado = false;
+    document.getElementById("paciente").value = "";
+    mostrarMensaje("msgAfiliado", "Error al consultar padrón de afiliados.", "error");
+  }
+}
+
+async function cargarDashboard() {
+  try {
+    const json = await get("accion=dashboard");
+    const d = json.dashboard || {};
+
+    document.getElementById("dashActivas").textContent = d.activas || 0;
+    document.getElementById("dashPorVencer").textContent = d.porVencer || 0;
+    document.getElementById("dashVencidas").textContent = d.vencidas || 0;
+    document.getElementById("dashEmitidas").textContent = d.emitidasEsteMes || 0;
+  } catch (e) {}
+}
+
+async function guardarReceta() {
+  const boton = document.getElementById("btnGuardar");
+
+  const dni = document.getElementById("dni").value.replace(/\D+/g, "");
+  const paciente = document.getElementById("paciente").value.trim();
+  const droga = document.getElementById("droga").value.trim();
+  const fecha = document.getElementById("fecha").value;
+
+  if (!dni || !paciente || !droga || !fecha) {
+    alert("Completá DNI, droga y fecha. El nombre debe aparecer automáticamente.");
+    return;
+  }
+
+  if (!afiliadoValidado) {
+    alert("Primero validá el DNI contra el padrón de afiliados.");
+    return;
+  }
+
+  boton.disabled = true;
+  boton.textContent = "Guardando...";
+  mostrarMensaje("msgCarga", "Guardando receta...", "info");
+
+  try {
+    const json = await post({
+      accion: "guardarReceta",
+      paciente,
+      dni,
+      droga,
+      fechaRecetaOriginal: fecha
+    });
+
+    mostrarMensaje("msgCarga", json.mensaje || "Operación realizada", json.ok ? "ok" : "error");
+
+    if (json.ok) {
+      document.getElementById("paciente").value = "";
+      document.getElementById("dni").value = "";
+      document.getElementById("droga").value = "";
+      document.getElementById("fecha").value = "";
+      afiliadoValidado = false;
+      ocultarMensaje("msgAfiliado");
+      cargarDashboard();
+    }
+
+    setTimeout(() => ocultarMensaje("msgCarga"), 3000);
+
+  } catch (error) {
+    mostrarMensaje("msgCarga", "Error al guardar.", "error");
+  }
+
+  boton.disabled = false;
+  boton.textContent = "Guardar receta";
+}
+
+function buscarAutomatico() {
+  clearTimeout(timerBusqueda);
+
+  timerBusqueda = setTimeout(() => {
+    const q = document.getElementById("buscar").value.trim();
+    if (q.length >= 2) buscarPaciente();
+  }, 350);
+}
+
+async function buscarPaciente() {
+  const q = document.getElementById("buscar").value.trim();
+  const boton = document.getElementById("btnBuscar");
+
+  if (!q) {
+    alert("Escribí un DNI, nombre o droga.");
+    return;
+  }
+
+  ultimaBusqueda = q;
+
+  boton.disabled = true;
+  boton.textContent = "Buscando...";
+  mostrarMensaje("msgBusqueda", "Buscando...", "info");
+
+  try {
+    const json = await get(`accion=buscar&q=${encodeURIComponent(q)}`);
+    renderResultados(ordenarResultados(json.resultados || []));
+    ocultarMensaje("msgBusqueda");
+  } catch (error) {
+    mostrarMensaje("msgBusqueda", "Error al buscar.", "error");
+  }
+
+  boton.disabled = false;
+  boton.textContent = "Buscar";
+}
+
+async function cargarVencidas() {
+  mostrarMensaje("msgBusqueda", "Cargando vencidas...", "info");
+
+  try {
+    const json = await get("accion=vencidas");
+    renderResultados(ordenarResultados(json.resultados || []));
+    ocultarMensaje("msgBusqueda");
+  } catch (error) {
+    mostrarMensaje("msgBusqueda", "Error al cargar vencidas.", "error");
+  }
+}
+
+async function cargarPorVencer() {
+  mostrarMensaje("msgBusqueda", "Cargando recetas por vencer...", "info");
+
+  try {
+    const json = await get("accion=porVencer");
+    renderResultados(ordenarResultados(json.resultados || []));
+    ocultarMensaje("msgBusqueda");
+  } catch (error) {
+    mostrarMensaje("msgBusqueda", "Error al cargar por vencer.", "error");
+  }
+}
+
+function ordenarResultados(lista) {
+  return lista.sort((a, b) => prioridadEstado(a) - prioridadEstado(b));
+}
+
+function prioridadEstado(r) {
+  if (!r.vencida && !r.yaEmitidaEsteMes && !r.mesOriginal) return 1;
+  if (r.diasRestantes <= 15 && !r.vencida) return 2;
+  if (r.yaEmitidaEsteMes) return 3;
+  if (r.mesOriginal) return 4;
+  if (r.vencida) return 5;
+  return 9;
+}
+
+function limpiarResultados() {
+  document.getElementById("buscar").value = "";
+  document.getElementById("resultados").innerHTML =
+    '<p class="dato">Buscá un paciente para ver sus medicamentos.</p>';
+}
+
+function renderResultados(lista) {
+  const contenedor = document.getElementById("resultados");
+
+  if (!lista.length) {
+    contenedor.innerHTML = "<p class='dato'>No se encontraron recetas.</p>";
+    return;
+  }
+
+  contenedor.innerHTML = lista.map(r => {
+    const visual = estadoVisual(r);
+    const alerta = !r.vencida && r.diasRestantes <= 15 ? "alerta" : "";
+
+    return `
+      <div class="receta ${visual.clase} ${alerta}">
+        <span class="pill ${visual.color}">${visual.texto}</span>
+
+        <h3>${escapeHtml(r.paciente)}</h3>
+
+        <p class="dato"><b>DNI:</b> ${escapeHtml(r.dni)}</p>
+        <p class="dato"><b>Droga:</b> ${escapeHtml(r.droga)}</p>
+        <p class="dato"><b>Receta original:</b> ${formatearFechaPantalla(r.fechaRecetaOriginal)}</p>
+        <p class="dato"><b>Vencimiento:</b> ${escapeHtml(r.vencimiento || "-")}</p>
+        <p class="dato"><b>Emitidas:</b> ${r.recetasEmitidas}</p>
+        <p class="dato"><b>Restantes:</b> ${r.recetasRestantes}</p>
+        <p class="dato"><b>Días restantes:</b> ${r.diasRestantes}</p>
+
+        <div class="acciones">
+          <button onclick="emitirReceta('${r.id}')">Emitir receta</button>
+          <button class="btn-blue" onclick="verHistorial('${r.id}')">Historial</button>
+          <button class="btn-orange" onclick='abrirEditar(${JSON.stringify(r)})'>Editar</button>
+          <button class="btn-red" onclick="eliminarReceta('${r.id}')">Eliminar</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function estadoVisual(r) {
+  if (r.vencida) {
+    return { clase: "vencida", color: "rojo", texto: "VENCIDA - Debe presentar nueva receta" };
+  }
+
+  if (r.diasRestantes <= 15) {
+    return { clase: "emitida", color: "naranja", texto: "ATENCIÓN - Próxima a vencer" };
+  }
+
+  if (r.mesOriginal) {
+    return { clase: "original", color: "azul", texto: "MES ORIGINAL - No emitir" };
+  }
+
+  if (r.yaEmitidaEsteMes) {
+    return { clase: "emitida", color: "naranja", texto: "YA EMITIDA ESTE MES" };
+  }
+
+  return { clase: "disponible", color: "verde", texto: "DISPONIBLE PARA EMITIR" };
+}
+
+async function emitirReceta(idReceta) {
+
+  if (!confirm("¿Confirmás emitir la receta de este mes?")) {
+    return;
+  }
+
+  // ABRIR VENTANA INMEDIATAMENTE
+  const nuevaVentana = window.open(
+    "https://misrx.com.ar/home",
+    "_blank"
+  );
+
+  try {
+
+    const json = await post({
+      accion: "emitirReceta",
+      idReceta
+    });
+
+    alert(json.mensaje || "Operación realizada");
+
+    if (json.ok) {
+
+      cargarDashboard();
+
+      if (ultimaBusqueda) {
+        buscarPaciente();
+      }
+
+    } else {
+
+      // SI FALLÓ, CERRAR VENTANA
+      if (nuevaVentana) {
+        nuevaVentana.close();
+      }
+    }
+
+  } catch (error) {
+
+    if (nuevaVentana) {
+      nuevaVentana.close();
+    }
+
+    alert("Error al emitir receta.");
+  }
+}
+
+async function verHistorial(idReceta) {
+  const contenedor = document.getElementById("historialContenido");
+  contenedor.innerHTML = "<p class='dato'>Cargando historial...</p>";
+  document.getElementById("modalHistorial").style.display = "flex";
+
+  try {
+    const json = await get(`accion=historial&id=${encodeURIComponent(idReceta)}`);
+    const historial = json.historial || [];
+
+    if (!historial.length) {
+      contenedor.innerHTML = "<p class='dato'>Todavía no hay emisiones registradas.</p>";
+      return;
+    }
+
+    contenedor.innerHTML = historial.map(h => `
+      <div class="historial-item">
+        <b>${escapeHtml(h.mesCorrespondiente)}</b>
+        <p class="dato">Emitida el ${escapeHtml(h.fechaEmision)}</p>
+      </div>
+    `).join("");
+
+  } catch (error) {
+    contenedor.innerHTML = "<p class='dato'>Error al cargar historial.</p>";
+  }
+}
+
+function abrirEditar(r) {
+  document.getElementById("editId").value = r.id;
+  document.getElementById("editPaciente").value = r.paciente;
+  document.getElementById("editDni").value = r.dni;
+  document.getElementById("editDroga").value = r.droga;
+  document.getElementById("editFecha").value = fechaInput(r.fechaRecetaOriginal);
+
+  document.getElementById("modalEditar").style.display = "flex";
+}
+
+function cerrarModal(id) {
+  document.getElementById(id).style.display = "none";
+}
+
+async function guardarEdicion() {
+  const data = {
+    accion: "editarReceta",
+    id: document.getElementById("editId").value,
+    paciente: document.getElementById("editPaciente").value.trim(),
+    dni: document.getElementById("editDni").value.trim(),
+    droga: document.getElementById("editDroga").value.trim(),
+    fechaRecetaOriginal: document.getElementById("editFecha").value
+  };
+
+  try {
+    const json = await post(data);
+    alert(json.mensaje || "Actualizado");
+    cerrarModal("modalEditar");
+
+    cargarDashboard();
+    if (ultimaBusqueda) buscarPaciente();
+
+  } catch (error) {
+    alert("Error al guardar edición.");
+  }
+}
+
+async function eliminarReceta(id) {
+  if (!confirm("¿Seguro que querés eliminar esta receta? No se borra el historial, queda marcada como ELIMINADA.")) return;
+
+  try {
+    const json = await post({
+      accion: "eliminarReceta",
+      id
+    });
+
+    alert(json.mensaje || "Eliminada");
+
+    cargarDashboard();
+    if (ultimaBusqueda) buscarPaciente();
+
+  } catch (error) {
+    alert("Error al eliminar receta.");
+  }
+}
+
+async function get(params) {
+  const res = await fetch(`${SCRIPT_URL}?${params}`);
+  return await res.json();
+}
+
+async function post(data) {
+  const res = await fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify(data)
+  });
+
+  return await res.json();
+}
+
+function fechaInput(valor) {
+  if (!valor) return "";
+
+  const d = new Date(valor);
+  if (isNaN(d)) return valor;
+
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function formatearFechaPantalla(valor) {
+  if (!valor) return "-";
+
+  const d = new Date(valor);
+  if (isNaN(d)) return escapeHtml(valor);
+
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = d.getFullYear();
+
+  return `${dd}/${mm}/${yyyy}`;
+}
+
+function escapeHtml(texto) {
+  return String(texto ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+</script>
+</body>
+</html>
+
