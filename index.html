@@ -193,6 +193,21 @@
     .receta.emitida { border-left: 8px solid var(--naranja); background: #fffaf1; }
     .receta.original { border-left: 8px solid var(--azul); background: #f7fbff; }
     .receta.alerta { box-shadow: 0 0 0 2px #ffe1a6 inset; }
+    .receta.historica {
+      border-left: 8px solid #9ca3af;
+      background: #f8fafc;
+      opacity: 0.86;
+    }
+
+    .grupo-tratamiento {
+      margin-bottom: 16px;
+    }
+
+    .ciclos-anteriores {
+      margin-top: 10px;
+      padding-left: 12px;
+      border-left: 2px solid var(--borde);
+    }
 
     .pill {
       display: inline-block;
@@ -671,7 +686,7 @@ async function cargarPorVencer() {
 }
 
 function ordenarResultados(lista) {
-  return lista.sort((a, b) => {
+  return [...lista].sort((a, b) => {
     const prioridad = prioridadEstado(a) - prioridadEstado(b);
     if (prioridad !== 0) return prioridad;
 
@@ -680,13 +695,11 @@ function ordenarResultados(lista) {
 }
 
 function prioridadEstado(r) {
-  if (esCicloInactivo(r)) return 8;
-  if (Number(r.recetasRestantes) <= 0) return 7;
-  if (!r.vencida && !r.yaEmitidaEsteMes && !r.mesOriginal) return 1;
-  if (r.diasRestantes <= 15 && !r.vencida) return 2;
-  if (r.yaEmitidaEsteMes) return 3;
-  if (r.mesOriginal) return 4;
-  if (r.vencida) return 5;
+  const estado = estadoReceta(r);
+  if (estado === "ACTIVA" && !r.vencida) return 1;
+  if (estado === "ACTIVA" && r.vencida) return 2;
+  if (estado === "RENOVADA") return 3;
+  if (estado === "ELIMINADA") return 4;
   return 9;
 }
 
@@ -695,13 +708,61 @@ function fechaOrden(valor) {
   return isNaN(fecha) ? 0 : fecha.getTime();
 }
 
-function esCicloInactivo(r) {
-  const estado = String(r.estado || "").toUpperCase();
-  return estado === "RENOVADA" || estado === "ELIMINADA" || r.activa === false;
+function estadoReceta(r) {
+  return String(r.estado || "ACTIVA").trim().toUpperCase();
+}
+
+function esRenovada(r) {
+  return estadoReceta(r) === "RENOVADA";
+}
+
+function esEliminada(r) {
+  return estadoReceta(r) === "ELIMINADA";
+}
+
+function esActiva(r) {
+  return estadoReceta(r) === "ACTIVA" && r.activa !== false;
 }
 
 function puedeRenovarse(r) {
-  return !esCicloInactivo(r) && (r.vencida || Number(r.recetasRestantes) <= 0);
+  return esActiva(r) && (r.vencida || Number(r.recetasRestantes) <= 0);
+}
+
+function puedeEmitirse(r) {
+  return esActiva(r) &&
+    !r.vencida &&
+    Number(r.recetasRestantes) > 0 &&
+    !r.mesOriginal &&
+    !r.yaEmitidaEsteMes;
+}
+
+function claveGrupo(r) {
+  return [
+    normalizarGrupo(r.paciente),
+    normalizarGrupo(r.dni),
+    normalizarGrupo(r.droga)
+  ].join("|");
+}
+
+function normalizarGrupo(valor) {
+  return String(valor ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
+function agruparResultados(lista) {
+  const grupos = new Map();
+
+  ordenarResultados(lista).forEach(r => {
+    const clave = claveGrupo(r);
+    if (!grupos.has(clave)) grupos.set(clave, []);
+    grupos.get(clave).push(r);
+  });
+
+  return [...grupos.values()];
 }
 
 function limpiarResultados() {
@@ -719,45 +780,96 @@ function renderResultados(lista) {
     return;
   }
 
-  contenedor.innerHTML = lista.map(r => {
+  lista.forEach(r => {
     recetasRenderizadas[String(r.id)] = r;
-    const visual = estadoVisual(r);
-    const alerta = !r.vencida && r.diasRestantes <= 15 ? "alerta" : "";
-    const emitirDeshabilitado = r.vencida || esCicloInactivo(r) || Number(r.recetasRestantes) <= 0;
-    const botonRenovar = puedeRenovarse(r)
-      ? `<button class="btn-blue" onclick="abrirRenovacion('${escapeAtributo(r.id)}')">Renovar tratamiento</button>`
-      : "";
+  });
+
+  const gruposHtml = agruparResultados(lista).map((grupo, indice) => {
+    const ciclosActivos = grupo
+      .filter(esActiva)
+      .sort((a, b) => fechaOrden(b.fechaRecetaOriginal) - fechaOrden(a.fechaRecetaOriginal));
+    const vigente = ciclosActivos[0] || null;
+    const historicos = grupo
+      .filter(r => !esEliminada(r) && (!vigente || String(r.id) !== String(vigente.id)))
+      .sort((a, b) => fechaOrden(b.fechaRecetaOriginal) - fechaOrden(a.fechaRecetaOriginal));
+    const idAnteriores = `ciclos-anteriores-${indice}`;
+    const idBoton = `btn-ciclos-anteriores-${indice}`;
+
+    if (!vigente) return "";
 
     return `
-      <div class="receta ${visual.clase} ${alerta}">
-        <span class="pill ${visual.color}">${visual.texto}</span>
-
-        <h3>${escapeHtml(r.paciente)}</h3>
-
-        <p class="dato"><b>DNI:</b> ${escapeHtml(r.dni)}</p>
-        <p class="dato"><b>Droga:</b> ${escapeHtml(r.droga)}</p>
-        <p class="dato"><b>Receta original:</b> ${formatearFechaPantalla(r.fechaRecetaOriginal)}</p>
-        <p class="dato"><b>Vencimiento:</b> ${escapeHtml(r.vencimiento || "-")}</p>
-        <p class="dato"><b>Emitidas:</b> ${r.recetasEmitidas}</p>
-        <p class="dato"><b>Restantes:</b> ${r.recetasRestantes}</p>
-        <p class="dato"><b>Días restantes:</b> ${r.diasRestantes}</p>
-        <p class="dato"><b>Ciclo:</b> ${esCicloInactivo(r) ? "Histórico" : "Vigente"}</p>
-
-        <div class="acciones">
-          <button onclick="emitirReceta('${escapeAtributo(r.id)}')" ${emitirDeshabilitado ? "disabled" : ""}>Emitir receta</button>
-          ${botonRenovar}
-          <button class="btn-blue" onclick="verHistorial('${escapeAtributo(r.id)}')">Historial</button>
-          <button class="btn-orange" onclick="abrirEditarPorId('${escapeAtributo(r.id)}')">Editar</button>
-          <button class="btn-red" onclick="eliminarReceta('${escapeAtributo(r.id)}')">Eliminar</button>
-        </div>
+      <div class="grupo-tratamiento">
+        ${renderReceta(vigente)}
+        ${historicos.length ? `
+          <button
+            id="${idBoton}"
+            class="btn-sec"
+            onclick="alternarCiclosAnteriores('${idAnteriores}', '${idBoton}')"
+          >Ver ciclos anteriores</button>
+          <div id="${idAnteriores}" class="ciclos-anteriores" hidden>
+            ${historicos.map(r => renderReceta(r, true)).join("")}
+          </div>
+        ` : ""}
       </div>
     `;
   }).join("");
+
+  contenedor.innerHTML = gruposHtml ||
+    "<p class='dato'>No se encontraron tratamientos vigentes.</p>";
 }
 
-function estadoVisual(r) {
-  if (esCicloInactivo(r)) {
-    return { clase: "original", color: "azul", texto: "CICLO ANTERIOR - RENOVADO" };
+function renderReceta(r, historica = false) {
+  const visual = estadoVisual(r, historica);
+  const alerta = !historica && esActiva(r) && !r.vencida && r.diasRestantes <= 15 ? "alerta" : "";
+  const botonEmitir = !historica && puedeEmitirse(r)
+    ? `<button onclick="emitirReceta('${escapeAtributo(r.id)}')">Emitir receta</button>`
+    : "";
+  const botonRenovar = !historica && puedeRenovarse(r)
+    ? `<button class="btn-blue" onclick="abrirRenovacion('${escapeAtributo(r.id)}')">Renovar tratamiento</button>`
+    : "";
+
+  return `
+    <div class="receta ${visual.clase} ${alerta}">
+      <span class="pill ${visual.color}">${visual.texto}</span>
+
+      <h3>${escapeHtml(r.paciente)}</h3>
+
+      <p class="dato"><b>DNI:</b> ${escapeHtml(r.dni)}</p>
+      <p class="dato"><b>Droga:</b> ${escapeHtml(r.droga)}</p>
+      <p class="dato"><b>Receta original:</b> ${formatearFechaPantalla(r.fechaRecetaOriginal)}</p>
+      <p class="dato"><b>Vencimiento:</b> ${escapeHtml(r.vencimiento || "-")}</p>
+      <p class="dato"><b>Emitidas:</b> ${r.recetasEmitidas}</p>
+      <p class="dato"><b>Restantes:</b> ${r.recetasRestantes}</p>
+      <p class="dato"><b>Días restantes:</b> ${r.diasRestantes}</p>
+      <p class="dato"><b>Ciclo:</b> ${historica ? "Histórico" : "Vigente"}</p>
+
+      <div class="acciones">
+        ${botonEmitir}
+        ${botonRenovar}
+        <button class="btn-blue" onclick="verHistorial('${escapeAtributo(r.id)}')">Historial</button>
+        <button class="btn-orange" onclick="abrirEditarPorId('${escapeAtributo(r.id)}')">Editar</button>
+        <button class="btn-red" onclick="eliminarReceta('${escapeAtributo(r.id)}')">Eliminar</button>
+      </div>
+    </div>
+  `;
+}
+
+function alternarCiclosAnteriores(idContenedor, idBoton) {
+  const ciclos = document.getElementById(idContenedor);
+  const boton = document.getElementById(idBoton);
+  const mostrar = ciclos.hidden;
+
+  ciclos.hidden = !mostrar;
+  boton.textContent = mostrar ? "Ocultar ciclos anteriores" : "Ver ciclos anteriores";
+}
+
+function estadoVisual(r, historica = false) {
+  if (historica || esRenovada(r)) {
+    return { clase: "historica", color: "azul", texto: "CICLO ANTERIOR - RENOVADO" };
+  }
+
+  if (esEliminada(r)) {
+    return { clase: "historica", color: "rojo", texto: "ELIMINADA" };
   }
 
   if (Number(r.recetasRestantes) <= 0) {
