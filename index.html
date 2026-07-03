@@ -100,6 +100,58 @@
       margin-top: 6px;
     }
 
+    .reportes-acceso {
+      grid-column: 1 / -1;
+      width: 100%;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 16px;
+      text-align: left;
+      background: white;
+      color: var(--texto);
+      border: 1px solid var(--borde);
+      border-radius: 18px;
+      padding: 20px;
+      margin: 0;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    }
+
+    .reportes-acceso:hover {
+      background: white;
+      border-color: #b7d3c4;
+      box-shadow: 0 10px 24px rgba(9, 88, 47, 0.14);
+      transform: translateY(-1px);
+    }
+
+    .reportes-icono {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: #dff5e8;
+      color: var(--verde-oscuro);
+    }
+
+    .reportes-acceso strong {
+      display: block;
+      color: var(--verde-oscuro);
+      font-size: clamp(1.15rem, 1vw + 1rem, 1.6rem);
+    }
+
+    .reportes-acceso span {
+      display: block;
+      color: var(--gris);
+      font-weight: normal;
+      margin-top: 4px;
+    }
+
+    .reportes-acceso .reportes-icono {
+      color: var(--verde-oscuro);
+      margin-top: 0;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -289,6 +341,130 @@
       padding: 8px 0;
     }
 
+    .reportes-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .reportes-header h2 { margin-bottom: 4px; }
+
+    .filtros-reportes {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(140px, 1fr));
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 5px;
+      border-radius: 12px;
+      border: 1px solid #cfd8d3;
+      font-size: 15px;
+      background: white;
+    }
+
+    .indicadores-reportes {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .mini-chart {
+      display: grid;
+      gap: 10px;
+    }
+
+    .chart-row {
+      display: grid;
+      grid-template-columns: minmax(92px, 150px) 1fr auto;
+      gap: 10px;
+      align-items: center;
+      color: var(--gris);
+      font-size: 14px;
+    }
+
+    .chart-bar-bg {
+      height: 12px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+
+    .chart-bar {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--verde);
+      min-width: 2px;
+    }
+
+    .chart-bar.azul { background: var(--azul); }
+    .chart-bar.naranja { background: var(--naranja); }
+
+    .tabla-reportes {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .tabla-reportes th,
+    .tabla-reportes td {
+      border-bottom: 1px solid var(--borde);
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .tabla-reportes th {
+      color: var(--verde-oscuro);
+      background: #f8fafc;
+    }
+
+    .tabla-scroll {
+      overflow-x: auto;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .timeline-item {
+      border-left: 5px solid var(--verde);
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 10px 12px;
+    }
+
+    .comparativa {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .positivo { color: var(--verde-oscuro); }
+    .negativo { color: var(--rojo); }
+
+    .btn-exportar {
+      width: 100%;
+      min-height: 58px;
+      font-size: 16px;
+    }
+
     footer {
       text-align: center;
       color: #4b5563;
@@ -299,12 +475,20 @@
     @media (max-width: 850px) {
       .grid { grid-template-columns: 1fr; }
       .dashboard { grid-template-columns: 1fr 1fr; }
+      .indicadores-reportes { grid-template-columns: 1fr 1fr; }
+      .filtros-reportes { grid-template-columns: 1fr 1fr; }
+      .comparativa { grid-template-columns: 1fr 1fr; }
       header { padding: 20px 14px 18px; }
       main { margin: 18px auto; }
     }
 
     @media (max-width: 500px) {
       .dashboard { grid-template-columns: 1fr; }
+      .indicadores-reportes,
+      .filtros-reportes,
+      .comparativa { grid-template-columns: 1fr; }
+      .reportes-acceso { grid-template-columns: 1fr; }
+      .chart-row { grid-template-columns: 1fr; gap: 5px; }
       .card { padding: 14px; border-radius: 14px; }
       input, textarea, button { font-size: 16px; }
       .acciones { flex-direction: column; }
@@ -329,12 +513,23 @@
       <p>Registro y control de recetas mensuales</p>
     </header>
 
-    <main>
+    <main id="vistaInicio">
       <section class="dashboard">
-        <div class="dash-card"><span>Recetas activas</span><strong id="dashActivas">0</strong></div>
-        <div class="dash-card"><span>Por vencer</span><strong id="dashPorVencer">0</strong></div>
-        <div class="dash-card"><span>Vencidas</span><strong id="dashVencidas">0</strong></div>
-        <div class="dash-card"><span>Emitidas este mes</span><strong id="dashEmitidas">0</strong></div>
+        <button class="reportes-acceso" onclick="abrirReportes()">
+          <span class="reportes-icono" aria-hidden="true">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+              <path d="M4 19V5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M4 19h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M8 16v-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M12 16V8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M16 16v-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span>
+            <strong>&#128202; REPORTES Y ESTAD&Iacute;STICAS</strong>
+            <span>Ver estad&iacute;sticas completas, actividad, evoluci&oacute;n e informes del sistema.</span>
+          </span>
+        </button>
       </section>
 
       <div class="grid">
@@ -392,6 +587,111 @@ Levotiroxina 100mcg"></textarea>
           <p class="dato">Buscá un paciente para ver sus medicamentos.</p>
         </div>
       </section>
+    </main>
+
+    <main id="vistaReportes" class="oculto">
+      <div class="reportes-header">
+        <div>
+          <h2>REPORTES</h2>
+          <p class="dato">Estad&iacute;sticas completas, actividad, evoluci&oacute;n e informes del sistema.</p>
+        </div>
+        <button class="btn-sec" onclick="volverInicio()">&larr; Volver al inicio</button>
+      </div>
+
+      <section class="card">
+        <div class="filtros-reportes">
+          <div>
+            <label>Mes</label>
+            <select id="reporteMes" onchange="actualizarReporte()"></select>
+          </div>
+          <div>
+            <label>A&ntilde;o</label>
+            <select id="reporteAnio" onchange="actualizarReporte()"></select>
+          </div>
+          <div>
+            <label>Todo el historial</label>
+            <select id="reporteHistorial" onchange="actualizarReporte()">
+              <option value="no">Periodo seleccionado</option>
+              <option value="si">Todo el historial</option>
+            </select>
+          </div>
+          <button onclick="actualizarReporte()">Actualizar reporte</button>
+        </div>
+        <div id="msgReportes" class="mensaje"></div>
+      </section>
+
+      <section class="indicadores-reportes" id="indicadoresReportesA"></section>
+      <section class="indicadores-reportes" id="indicadoresReportesB"></section>
+
+      <div class="report-grid">
+        <section class="card">
+          <h2>Actividad diaria</h2>
+          <div id="graficoActividadDiaria" class="mini-chart"></div>
+        </section>
+
+        <section class="card">
+          <h2>Originales vs Renovaciones</h2>
+          <div id="graficoOriginalesRenovaciones" class="mini-chart"></div>
+        </section>
+
+        <section class="card">
+          <h2>Evolucion mensual</h2>
+          <div id="graficoEvolucionMensual" class="mini-chart"></div>
+        </section>
+
+        <section class="card">
+          <h2>Top afiliados</h2>
+          <div class="tabla-scroll">
+            <table class="tabla-reportes">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>DNI</th>
+                  <th>Recetas originales</th>
+                  <th>Renovaciones</th>
+                  <th>Total</th>
+                  <th>Ultima emision</th>
+                </tr>
+              </thead>
+              <tbody id="tablaTopAfiliados"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Actividad diaria</h2>
+          <div class="tabla-scroll">
+            <table class="tabla-reportes">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Originales</th>
+                  <th>Renovaciones</th>
+                  <th>Total</th>
+                  <th>Afiliados atendidos</th>
+                </tr>
+              </thead>
+              <tbody id="tablaActividadDiaria"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Buscador</h2>
+          <label>DNI, nombre o apellido</label>
+          <input id="buscarAfiliadoReporte" placeholder="Buscar afiliado..." oninput="buscarAfiliadoReporte()" />
+          <div id="resultadoAfiliadoReporte"></div>
+        </section>
+
+        <section class="card">
+          <h2>Comparacion automatica</h2>
+          <div id="comparativaReporte" class="comparativa"></div>
+        </section>
+
+        <section class="card">
+          <button class="btn-exportar" onclick="exportarInformeProfesional()">&#128196; Exportar Informe Profesional</button>
+        </section>
+      </div>
     </main>
     <footer>
       Sistema interno de gestión de tratamientos prolongados - OSP Pasteleros Mendoza
@@ -471,6 +771,9 @@ let timerAfiliado = null;
 let ultimaBusqueda = "";
 let afiliadoValidado = false;
 let recetasRenderizadas = {};
+let reporteDatos = { recetas: [], historial: [] };
+let reporteCalculado = null;
+let timerBusquedaReporte = null;
 
 function entrarSistema() {
   const clave = document.getElementById("clave").value;
@@ -483,10 +786,12 @@ function entrarSistema() {
   localStorage.setItem("tp_login", "ok");
   document.getElementById("login").classList.add("oculto");
   document.getElementById("app").classList.remove("oculto");
+  inicializarFiltrosReportes();
   cargarDashboard();
 }
 
 window.addEventListener("load", () => {
+  inicializarFiltrosReportes();
   if (localStorage.getItem("tp_login") === "ok") {
     document.getElementById("login").classList.add("oculto");
     document.getElementById("app").classList.remove("oculto");
@@ -564,11 +869,16 @@ async function cargarDashboard() {
     const json = await get("accion=dashboard");
     const d = json.dashboard || {};
 
-    document.getElementById("dashActivas").textContent = d.activas || 0;
-    document.getElementById("dashPorVencer").textContent = d.porVencer || 0;
-    document.getElementById("dashVencidas").textContent = d.vencidas || 0;
-    document.getElementById("dashEmitidas").textContent = d.emitidasEsteMes || 0;
+    actualizarTextoSiExiste("dashActivas", d.activas || 0);
+    actualizarTextoSiExiste("dashPorVencer", d.porVencer || 0);
+    actualizarTextoSiExiste("dashVencidas", d.vencidas || 0);
+    actualizarTextoSiExiste("dashEmitidas", d.emitidasEsteMes || 0);
   } catch (e) {}
+}
+
+function actualizarTextoSiExiste(id, texto) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = texto;
 }
 
 async function guardarReceta() {
@@ -1086,6 +1396,305 @@ async function eliminarReceta(id) {
   } catch (error) {
     alert("Error al eliminar receta.");
   }
+}
+
+function abrirReportes() {
+  document.getElementById("vistaInicio").classList.add("oculto");
+  document.getElementById("vistaReportes").classList.remove("oculto");
+  actualizarReporte();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function volverInicio() {
+  document.getElementById("vistaReportes").classList.add("oculto");
+  document.getElementById("vistaInicio").classList.remove("oculto");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function inicializarFiltrosReportes() {
+  const mes = document.getElementById("reporteMes");
+  const anio = document.getElementById("reporteAnio");
+  if (!mes || !anio || mes.options.length) return;
+
+  const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  const hoy = new Date();
+  mes.innerHTML = meses.map((nombre, indice) => `<option value="${indice + 1}">${nombre}</option>`).join("");
+  mes.value = String(hoy.getMonth() + 1);
+
+  const actual = hoy.getFullYear();
+  let opciones = "";
+  for (let y = actual + 1; y >= actual - 8; y--) opciones += `<option value="${y}">${y}</option>`;
+  anio.innerHTML = opciones;
+  anio.value = String(actual);
+}
+
+async function actualizarReporte() {
+  mostrarMensaje("msgReportes", "Actualizando reporte...", "info");
+  try {
+    const mes = document.getElementById("reporteMes").value;
+    const anio = document.getElementById("reporteAnio").value;
+    const todo = document.getElementById("reporteHistorial").value === "si";
+    const json = await get(`accion=reportes&mes=${encodeURIComponent(mes)}&anio=${encodeURIComponent(anio)}&todo=${todo ? "1" : "0"}`);
+
+    reporteDatos = normalizarDatosReporte(json);
+    reporteCalculado = calcularReporte(reporteDatos, Number(mes), Number(anio), todo);
+    renderReporte(reporteCalculado);
+    ocultarMensaje("msgReportes");
+  } catch (error) {
+    reporteDatos = { recetas: [], historial: [] };
+    reporteCalculado = calcularReporte(reporteDatos, 0, 0, true);
+    renderReporte(reporteCalculado);
+    mostrarMensaje("msgReportes", "No se pudo cargar el dataset de reportes. Verifica que el endpoint accion=reportes este publicado.", "error");
+  }
+}
+
+function normalizarDatosReporte(json) {
+  const base = (json && (json.reportes || json)) || {};
+  return {
+    recetas: (Array.isArray(base.recetas) ? base.recetas : []).map(normalizarRecetaReporte),
+    historial: (Array.isArray(base.historial) ? base.historial : []).map(normalizarHistorialReporte)
+  };
+}
+
+function normalizarRecetaReporte(r) {
+  return {
+    id: campoReporte(r, ["id", "id receta", "idreceta"]),
+    idAnterior: campoReporte(r, ["id receta anterior", "idrecetaanterior"]),
+    paciente: campoReporte(r, ["paciente", "nombre", "nombre y apellido"]),
+    dni: campoReporte(r, ["dni"]),
+    droga: campoReporte(r, ["droga", "medicamento"]),
+    fecha: fechaReporte(campoReporte(r, ["fecha receta original", "fecharecetaoriginal", "fecha"])),
+    estado: String(campoReporte(r, ["estado"]) || "ACTIVA").toUpperCase(),
+    recetasEmitidas: Number(campoReporte(r, ["recetas emitidas", "recetasemitidas"]) || r.recetasEmitidas || 0),
+    recetasRestantes: Number(campoReporte(r, ["recetas restantes", "recetasrestantes"]) || r.recetasRestantes || 0),
+    diasRestantes: Number(campoReporte(r, ["dias restantes", "diasrestantes"]) || r.diasRestantes || 0)
+  };
+}
+
+function normalizarHistorialReporte(h) {
+  return {
+    idReceta: campoReporte(h, ["id receta", "idreceta", "id"]),
+    paciente: campoReporte(h, ["paciente", "nombre", "nombre y apellido"]),
+    dni: campoReporte(h, ["dni"]),
+    droga: campoReporte(h, ["droga", "medicamento"]),
+    fecha: fechaReporte(campoReporte(h, ["fecha emision", "fechaemision", "fecha"])),
+    mesCorrespondiente: campoReporte(h, ["mes correspondiente", "mescorrespondiente"])
+  };
+}
+
+function campoReporte(obj, aliases) {
+  const mapa = {};
+  Object.keys(obj || {}).forEach(k => mapa[normalizarClaveReporte(k)] = obj[k]);
+  for (const alias of aliases) {
+    const clave = normalizarClaveReporte(alias);
+    if (Object.prototype.hasOwnProperty.call(mapa, clave)) return mapa[clave];
+  }
+  return "";
+}
+
+function normalizarClaveReporte(valor) {
+  return String(valor || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, "");
+}
+
+function fechaReporte(valor) {
+  if (!valor) return null;
+  if (valor instanceof Date && !isNaN(valor)) return valor;
+  const d = new Date(valor);
+  return isNaN(d) ? null : d;
+}
+
+function calcularReporte(datos, mes, anio, todo) {
+  const recetas = datos.recetas.filter(r => todo || fechaEnPeriodo(r.fecha, mes, anio));
+  const historial = datos.historial.filter(h => todo || fechaEnPeriodo(h.fecha, mes, anio));
+  const originales = recetas.filter(r => !r.idAnterior).length;
+  const renovaciones = recetas.filter(r => r.idAnterior).length;
+  const afiliados = new Set(recetas.map(r => r.dni).filter(Boolean));
+  const activos = recetas.filter(r => r.estado === "ACTIVA").length;
+  const finalizados = recetas.filter(r => r.estado === "RENOVADA" || r.estado === "ELIMINADA" || r.recetasRestantes <= 0).length;
+  const porVencer = recetas.filter(r => r.estado === "ACTIVA" && r.diasRestantes > 0 && r.diasRestantes <= 15).length;
+  const vencidos = recetas.filter(r => r.estado === "ACTIVA" && (r.diasRestantes < 0 || r.recetasRestantes <= 0)).length;
+
+  return {
+    recetas,
+    historial,
+    indicadores: { originales, renovaciones, total: recetas.length + historial.length, afiliados: afiliados.size, activos, finalizados, porVencer, vencidos },
+    actividad: agruparActividad(recetas),
+    top: calcularTopAfiliados(recetas, historial),
+    evolucion: agruparMensual(datos.recetas),
+    comparativa: calcularComparativa(datos.recetas, mes, anio, todo)
+  };
+}
+
+function fechaEnPeriodo(fecha, mes, anio) {
+  return fecha && fecha.getMonth() + 1 === mes && fecha.getFullYear() === anio;
+}
+
+function agruparActividad(recetas) {
+  const mapa = new Map();
+  recetas.forEach(r => {
+    const clave = claveFecha(r.fecha);
+    if (!clave) return;
+    if (!mapa.has(clave)) mapa.set(clave, { fecha: clave, originales: 0, renovaciones: 0, afiliados: new Set() });
+    const item = mapa.get(clave);
+    if (r.idAnterior) item.renovaciones++; else item.originales++;
+    if (r.dni) item.afiliados.add(r.dni);
+  });
+  return [...mapa.values()].map(i => ({ ...i, total: i.originales + i.renovaciones, afiliadosAtendidos: i.afiliados.size })).sort((a, b) => a.fecha.localeCompare(b.fecha));
+}
+
+function calcularTopAfiliados(recetas, historial) {
+  const ultimas = new Map();
+  historial.forEach(h => {
+    if (!h.dni || !h.fecha) return;
+    const actual = ultimas.get(h.dni);
+    if (!actual || h.fecha > actual) ultimas.set(h.dni, h.fecha);
+  });
+
+  const mapa = new Map();
+  recetas.forEach(r => {
+    const dni = r.dni || "Sin DNI";
+    if (!mapa.has(dni)) mapa.set(dni, { nombre: r.paciente || "-", dni, originales: 0, renovaciones: 0, total: 0, ultima: null });
+    const item = mapa.get(dni);
+    if (r.paciente) item.nombre = r.paciente;
+    if (r.idAnterior) item.renovaciones++; else item.originales++;
+    item.total++;
+    if (r.fecha && (!item.ultima || r.fecha > item.ultima)) item.ultima = r.fecha;
+  });
+
+  return [...mapa.values()].map(i => ({ ...i, ultima: ultimas.get(i.dni) || i.ultima })).sort((a, b) => b.total - a.total);
+}
+
+function agruparMensual(recetas) {
+  const mapa = new Map();
+  recetas.forEach(r => {
+    if (!r.fecha) return;
+    const clave = `${r.fecha.getFullYear()}-${String(r.fecha.getMonth() + 1).padStart(2, "0")}`;
+    mapa.set(clave, (mapa.get(clave) || 0) + 1);
+  });
+  return [...mapa.entries()].map(([mes, total]) => ({ mes, total })).sort((a, b) => a.mes.localeCompare(b.mes));
+}
+
+function calcularComparativa(recetas, mes, anio, todo) {
+  if (todo) return { anterior: 0, actual: recetas.length, diferencia: recetas.length, porcentaje: 100 };
+  const actual = recetas.filter(r => fechaEnPeriodo(r.fecha, mes, anio)).length;
+  const fechaAnterior = new Date(anio, mes - 2, 1);
+  const anterior = recetas.filter(r => fechaEnPeriodo(r.fecha, fechaAnterior.getMonth() + 1, fechaAnterior.getFullYear())).length;
+  const diferencia = actual - anterior;
+  const porcentaje = anterior ? Math.round((diferencia / anterior) * 100) : (actual ? 100 : 0);
+  return { anterior, actual, diferencia, porcentaje };
+}
+
+function renderReporte(reporte) {
+  renderIndicadores("indicadoresReportesA", [["Recetas originales", reporte.indicadores.originales], ["Renovaciones", reporte.indicadores.renovaciones], ["Total de movimientos", reporte.indicadores.total], ["Afiliados distintos", reporte.indicadores.afiliados]]);
+  renderIndicadores("indicadoresReportesB", [["Tratamientos activos", reporte.indicadores.activos], ["Tratamientos finalizados", reporte.indicadores.finalizados], ["Por vencer", reporte.indicadores.porVencer], ["Vencidos", reporte.indicadores.vencidos]]);
+  renderGrafico("graficoActividadDiaria", reporte.actividad.map(i => ({ etiqueta: formatearFechaCorta(i.fecha), valor: i.total })), "verde");
+  const totalTipo = reporte.indicadores.originales + reporte.indicadores.renovaciones;
+  renderGrafico("graficoOriginalesRenovaciones", [{ etiqueta: "Originales", valor: totalTipo ? Math.round(reporte.indicadores.originales * 100 / totalTipo) : 0, sufijo: "%" }, { etiqueta: "Renovaciones", valor: totalTipo ? Math.round(reporte.indicadores.renovaciones * 100 / totalTipo) : 0, sufijo: "%", color: "azul" }], "verde");
+  renderGrafico("graficoEvolucionMensual", reporte.evolucion, "naranja", "mes");
+  renderTopAfiliados(reporte.top);
+  renderActividadDiaria(reporte.actividad);
+  renderComparativa(reporte.comparativa);
+  buscarAfiliadoReporte();
+}
+
+function renderIndicadores(id, items) {
+  document.getElementById(id).innerHTML = items.map(([label, valor]) => `<div class="dash-card"><span>${escapeHtml(label)}</span><strong>${escapeHtml(valor)}</strong></div>`).join("");
+}
+
+function renderGrafico(id, datos, color = "verde", etiquetaCampo = "etiqueta") {
+  const max = Math.max(...datos.map(d => Number(d.valor || d.total || 0)), 1);
+  document.getElementById(id).innerHTML = datos.length ? datos.slice(-12).map(d => {
+    const valor = Number(d.valor ?? d.total ?? 0);
+    const ancho = Math.max(2, Math.round(valor * 100 / max));
+    const etiqueta = d[etiquetaCampo] || d.etiqueta || "-";
+    return `<div class="chart-row"><span>${escapeHtml(etiqueta)}</span><span class="chart-bar-bg"><span class="chart-bar ${d.color || color}" style="width:${ancho}%"></span></span><b>${valor}${d.sufijo || ""}</b></div>`;
+  }).join("") : "<p class='dato'>Sin datos para el periodo seleccionado.</p>";
+}
+
+function renderTopAfiliados(top) {
+  document.getElementById("tablaTopAfiliados").innerHTML = top.length ? top.slice(0, 20).map(i => `<tr><td>${escapeHtml(i.nombre)}</td><td>${escapeHtml(i.dni)}</td><td>${i.originales}</td><td>${i.renovaciones}</td><td>${i.total}</td><td>${i.ultima ? formatearFechaPantalla(i.ultima) : "-"}</td></tr>`).join("") : "<tr><td colspan='6'>Sin datos para el periodo seleccionado.</td></tr>";
+}
+
+function renderActividadDiaria(actividad) {
+  document.getElementById("tablaActividadDiaria").innerHTML = actividad.length ? actividad.map(i => `<tr><td>${formatearFechaCorta(i.fecha)}</td><td>${i.originales}</td><td>${i.renovaciones}</td><td>${i.total}</td><td>${i.afiliadosAtendidos}</td></tr>`).join("") : "<tr><td colspan='5'>Sin datos para el periodo seleccionado.</td></tr>";
+}
+
+function renderComparativa(c) {
+  const clase = c.diferencia >= 0 ? "positivo" : "negativo";
+  const flecha = c.diferencia >= 0 ? "▲" : "▼";
+  document.getElementById("comparativaReporte").innerHTML = `<div class="dash-card"><span>Cantidad anterior</span><strong>${c.anterior}</strong></div><div class="dash-card"><span>Cantidad actual</span><strong>${c.actual}</strong></div><div class="dash-card"><span>Diferencia</span><strong class="${clase}">${flecha} ${c.diferencia}</strong></div><div class="dash-card"><span>Porcentaje</span><strong class="${clase}">${c.porcentaje}%</strong></div>`;
+}
+
+function buscarAfiliadoReporte() {
+  clearTimeout(timerBusquedaReporte);
+  timerBusquedaReporte = setTimeout(renderBusquedaAfiliadoReporte, 200);
+}
+
+function renderBusquedaAfiliadoReporte() {
+  const cont = document.getElementById("resultadoAfiliadoReporte");
+  if (!cont || !reporteDatos.recetas.length) {
+    if (cont) cont.innerHTML = "<p class='dato'>Sin datos cargados.</p>";
+    return;
+  }
+  const q = normalizarGrupo(document.getElementById("buscarAfiliadoReporte").value);
+  if (!q) {
+    cont.innerHTML = "<p class='dato'>Ingresa DNI, nombre o apellido para ver la linea de tiempo.</p>";
+    return;
+  }
+  const recetas = reporteDatos.recetas.filter(r => normalizarGrupo(`${r.dni} ${r.paciente}`).includes(q)).sort((a, b) => fechaOrden(a.fecha) - fechaOrden(b.fecha));
+  if (!recetas.length) {
+    cont.innerHTML = "<p class='dato'>No se encontraron afiliados.</p>";
+    return;
+  }
+  const ciclosCompletos = recetas.filter(r => r.recetasRestantes <= 0 || r.estado === "RENOVADA").length;
+  const ultima = recetas.reduce((max, r) => r.fecha && (!max || r.fecha > max) ? r.fecha : max, null);
+  cont.innerHTML = `<div class="indicadores-reportes" style="margin-top:14px;"><div class="dash-card"><span>Total de recetas</span><strong>${recetas.length}</strong></div><div class="dash-card"><span>Ciclos completos</span><strong>${ciclosCompletos}</strong></div><div class="dash-card"><span>Ultima emision</span><strong>${ultima ? formatearFechaPantalla(ultima) : "-"}</strong></div><div class="dash-card"><span>Afiliado</span><strong>${escapeHtml(recetas[0].paciente || "-")}</strong></div></div><div class="timeline">${recetas.map((r, i) => `<div class="timeline-item"><b>${escapeHtml(etiquetaTimeline(i))}</b><p class="dato"><b>Fecha:</b> ${formatearFechaPantalla(r.fecha)} | <b>Droga:</b> ${escapeHtml(r.droga || "-")}</p></div>`).join("")}</div>`;
+}
+
+function etiquetaTimeline(indice) {
+  if (indice === 0) return "Receta original";
+  if (indice >= 6) return "Nuevo ciclo";
+  return `Renovacion ${indice}`;
+}
+
+function exportarInformeProfesional() {
+  if (!reporteCalculado) return;
+  const hojas = [
+    ["Resumen ejecutivo", [["Concepto", "Valor"], ["Total movimientos", reporteCalculado.indicadores.total], ["Afiliados distintos", reporteCalculado.indicadores.afiliados]]],
+    ["Indicadores", Object.entries(reporteCalculado.indicadores).map(([k, v]) => [k, v])],
+    ["Comparativas", [["Cantidad anterior", "Cantidad actual", "Diferencia", "Porcentaje"], [reporteCalculado.comparativa.anterior, reporteCalculado.comparativa.actual, reporteCalculado.comparativa.diferencia, reporteCalculado.comparativa.porcentaje + "%"]]],
+    ["Top afiliados", [["Nombre", "DNI", "Originales", "Renovaciones", "Total", "Ultima emision"], ...reporteCalculado.top.map(i => [i.nombre, i.dni, i.originales, i.renovaciones, i.total, i.ultima ? formatearFechaPantalla(i.ultima) : "-"])]],
+    ["Actividad diaria", [["Fecha", "Originales", "Renovaciones", "Total", "Afiliados atendidos"], ...reporteCalculado.actividad.map(i => [formatearFechaCorta(i.fecha), i.originales, i.renovaciones, i.total, i.afiliadosAtendidos])]],
+    ["Detalle completo", [["Nombre", "DNI", "Droga", "Fecha", "Tipo", "Estado"], ...reporteCalculado.recetas.map(r => [r.paciente, r.dni, r.droga, formatearFechaPantalla(r.fecha), r.idAnterior ? "Renovacion" : "Original", r.estado])]]
+  ];
+  const blob = new Blob([crearExcelXml(hojas)], { type: "application/vnd.ms-excel;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `informe-profesional-${new Date().toISOString().slice(0, 10)}.xls`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function crearExcelXml(hojas) {
+  const worksheets = hojas.map(([nombre, filas]) => `<Worksheet ss:Name="${xmlExcel(nombre)}"><Table>${filas.map(fila => `<Row>${fila.map(celda => `<Cell><Data ss:Type="${typeof celda === "number" ? "Number" : "String"}">${xmlExcel(celda)}</Data></Cell>`).join("")}</Row>`).join("")}</Table></Worksheet>`).join("");
+  return `<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">${worksheets}</Workbook>`;
+}
+
+function xmlExcel(valor) {
+  return escapeHtml(valor).replace(/\r?\n/g, " ");
+}
+
+function claveFecha(fecha) {
+  if (!fecha) return "";
+  return `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, "0")}-${String(fecha.getDate()).padStart(2, "0")}`;
+}
+
+function formatearFechaCorta(valor) {
+  if (!valor) return "-";
+  const fecha = valor instanceof Date ? valor : new Date(valor);
+  if (isNaN(fecha)) return String(valor);
+  return `${String(fecha.getDate()).padStart(2, "0")}/${String(fecha.getMonth() + 1).padStart(2, "0")}/${fecha.getFullYear()}`;
 }
 
 async function get(params) {

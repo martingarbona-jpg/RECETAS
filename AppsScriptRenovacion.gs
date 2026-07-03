@@ -3,9 +3,12 @@
  * 1. Agregar en el dispatcher de doPost:
  *      case "renovarReceta":
  *        return responderJson(renovarReceta(data));
- * 2. Si los nombres difieren, ajustar solamente HOJA_RECETAS y HOJA_HISTORIAL.
- * 3. Usar cicloVigenteDuplicado(...) en la validacion de guardarReceta.
- * 4. En buscar/vencidas/porVencer no filtrar solo estado ACTIVA:
+ * 2. Agregar en el dispatcher de doGet:
+ *      case "reportes":
+ *        return responderJson(obtenerReportes());
+ * 3. Si los nombres difieren, ajustar solamente HOJA_RECETAS y HOJA_HISTORIAL.
+ * 4. Usar cicloVigenteDuplicado(...) en la validacion de guardarReceta.
+ * 5. En buscar/vencidas/porVencer no filtrar solo estado ACTIVA:
  *    incluir RENOVADA, excluir ELIMINADA y aplicar ordenarCiclosParaRespuesta.
  */
 
@@ -14,6 +17,70 @@ var HOJA_HISTORIAL = "Historial";
 var ESTADO_ACTIVO = "ACTIVA";
 var ESTADO_RENOVADO = "RENOVADA";
 var MAX_RECETAS_CICLO = 5;
+
+function obtenerReportes() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var recetas = obtenerTabla_(ss.getSheetByName(HOJA_RECETAS));
+  var historial = obtenerTabla_(ss.getSheetByName(HOJA_HISTORIAL));
+  var emisionesPorReceta = {};
+
+  historial.filas.forEach(function(fila) {
+    var id = String(valorCampo_(fila.objeto, ["id receta", "idreceta", "id"]) || "");
+    if (!id) return;
+    emisionesPorReceta[id] = (emisionesPorReceta[id] || 0) + 1;
+  });
+
+  return {
+    ok: true,
+    reportes: {
+      recetas: recetas.filas.map(function(fila) {
+        return normalizarRecetaParaReporte_(fila.objeto, emisionesPorReceta);
+      }),
+      historial: historial.filas.map(function(fila) {
+        return normalizarHistorialParaReporte_(fila.objeto, recetas);
+      })
+    }
+  };
+}
+
+function normalizarRecetaParaReporte_(objeto, emisionesPorReceta) {
+  var id = String(valorCampo_(objeto, ["id", "id receta", "idreceta"]) || "");
+  var fechaOriginal = fechaCampo_(objeto, ["fecha receta original", "fecharecetaoriginal"]);
+  var estado = mayusculas_(valorCampo_(objeto, ["estado"])) || ESTADO_ACTIVO;
+  var emitidas = emisionesPorReceta[id] || 0;
+  var vencimiento = fechaOriginal ? sumarMeses_(fechaOriginal, MAX_RECETAS_CICLO) : null;
+  var diasRestantes = vencimiento ? Math.ceil((finDelDia_(vencimiento) - new Date()) / 86400000) : 0;
+
+  return {
+    id: id,
+    idRecetaAnterior: valorCampo_(objeto, ["id receta anterior", "idrecetaanterior"]),
+    paciente: valorCampo_(objeto, ["paciente", "nombre", "nombre y apellido"]),
+    dni: valorCampo_(objeto, ["dni"]),
+    droga: valorCampo_(objeto, ["droga", "medicamento"]),
+    fechaRecetaOriginal: fechaOriginal ? fechaOriginal.toISOString() : "",
+    estado: estado,
+    recetasEmitidas: emitidas,
+    recetasRestantes: Math.max(0, MAX_RECETAS_CICLO - emitidas),
+    diasRestantes: diasRestantes
+  };
+}
+
+function normalizarHistorialParaReporte_(objeto, recetas) {
+  var idReceta = String(valorCampo_(objeto, ["id receta", "idreceta", "id"]) || "");
+  var receta = buscarFilaPorId_(recetas, idReceta);
+
+  return {
+    idReceta: idReceta,
+    paciente: valorCampo_(objeto, ["paciente", "nombre", "nombre y apellido"]) ||
+      (receta ? valorCampo_(receta.objeto, ["paciente", "nombre", "nombre y apellido"]) : ""),
+    dni: valorCampo_(objeto, ["dni"]) ||
+      (receta ? valorCampo_(receta.objeto, ["dni"]) : ""),
+    droga: valorCampo_(objeto, ["droga", "medicamento"]) ||
+      (receta ? valorCampo_(receta.objeto, ["droga", "medicamento"]) : ""),
+    fechaEmision: fechaCampo_(objeto, ["fecha emision", "fechaemision", "fecha"]) || "",
+    mesCorrespondiente: valorCampo_(objeto, ["mes correspondiente", "mescorrespondiente"])
+  };
+}
 
 function renovarReceta(data) {
   var lock = LockService.getScriptLock();
