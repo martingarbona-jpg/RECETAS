@@ -1605,7 +1605,9 @@ function renderGrafico(id, datos, color = "verde", etiquetaCampo = "etiqueta") {
   const max = Math.max(...datos.map(d => Number(d.valor || d.total || 0)), 1);
   document.getElementById(id).innerHTML = datos.length ? datos.slice(-12).map(d => {
     const valor = Number(d.valor ?? d.total ?? 0);
-    const ancho = Math.max(2, Math.round(valor * 100 / max));
+    const ancho = valor > 0
+      ? Math.max(10, Math.round(valor * 100 / max))
+      : 0;
     const etiqueta = d[etiquetaCampo] || d.etiqueta || "-";
     return `<div class="chart-row"><span>${escapeHtml(etiqueta)}</span><span class="chart-bar-bg"><span class="chart-bar ${d.color || color}" style="width:${ancho}%"></span></span><b>${valor}${d.sufijo || ""}</b></div>`;
   }).join("") : "<p class='dato'>Sin datos para el periodo seleccionado.</p>";
